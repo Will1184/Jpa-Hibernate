@@ -48,5 +48,9 @@ public class HibernateCrudService {
             System.out.println("Cliente Eliminado con Exito!");
             service.listar().forEach(System.out::println);
         });
+//        if (optionalCliente.isPresent()){
+//            service.eliminar(id);
+//        }
+        manager.close();
     }
 }
