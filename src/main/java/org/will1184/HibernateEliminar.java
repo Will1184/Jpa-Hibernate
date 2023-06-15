@@ -1,7 +1,8 @@
-package org.will1184.util;
+package org.will1184;
 
 import jakarta.persistence.EntityManager;
 import org.will1184.entity.Cliente;
+import org.will1184.util.JpaUtil;
 
 import java.util.Scanner;
 
