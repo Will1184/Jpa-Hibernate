@@ -55,6 +55,8 @@ public class HibernateCriteriaBusquedaDinamica {
             }
             for (Predicate c: condiciones){
                if (c.getExpressions().isEmpty()){
+                   manager.getTransaction().rollback();
+                   manager.close();
                    throw new CondicionException("Tiene uno o varios campos vacio");
                }
             }
