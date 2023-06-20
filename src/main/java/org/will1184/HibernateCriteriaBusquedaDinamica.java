@@ -53,6 +53,11 @@ public class HibernateCriteriaBusquedaDinamica {
                 manager.close();
                 throw new CondicionException("No puede dejar ningun campo vacio");
             }
+            for (Predicate c: condiciones){
+               if (c.getExpressions().isEmpty()){
+                   throw new CondicionException("Tiene uno o varios campos vacio");
+               }
+            }
 
             query.select(from).where(builder.and(condiciones.toArray(new Predicate[condiciones.size()])));
             List<Cliente> clientes = manager.createQuery(query).getResultList();
