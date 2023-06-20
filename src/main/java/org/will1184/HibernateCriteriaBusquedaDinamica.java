@@ -5,9 +5,12 @@ import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.CriteriaQuery;
 import jakarta.persistence.criteria.Predicate;
 import jakarta.persistence.criteria.Root;
+import net.bytebuddy.implementation.bytecode.Throw;
 import org.hibernate.HibernateError;
 import org.hibernate.HibernateException;
 import org.will1184.entity.Cliente;
+import org.will1184.exception.CondicionException;
+import org.will1184.exception.LecturaException;
 import org.will1184.util.JpaUtil;
 
 import java.sql.SQLException;
@@ -34,7 +37,7 @@ public class HibernateCriteriaBusquedaDinamica {
         CriteriaQuery<Cliente> query = builder.createQuery(Cliente.class);
         Root<Cliente> from = query.from(Cliente.class);
 
-        try {
+
             List<Predicate> condiciones = new ArrayList<>();
             if (nombre!= null && !nombre.isEmpty()){
                 condiciones.add(builder.equal(from.get("nombre"),nombre));
@@ -45,20 +48,22 @@ public class HibernateCriteriaBusquedaDinamica {
             if (formaPago!= null && !formaPago.equals("")){
                 condiciones.add(builder.equal(from.get("formaPago"),formaPago));
             }
+            if (condiciones.isEmpty()){
+                manager.getTransaction().rollback();
+                manager.close();
+                throw new CondicionException("No puede dejar ningun campo vacio");
+            }
+
             query.select(from).where(builder.and(condiciones.toArray(new Predicate[condiciones.size()])));
-
             List<Cliente> clientes = manager.createQuery(query).getResultList();
+
+            if (clientes.isEmpty()) {
+                manager.getTransaction().rollback();
+                manager.close();
+                throw new LecturaException("No existe el cliente");
+            }
             clientes.forEach(System.out::println);
-            manager.getTransaction().commit();
-
-        }catch (IllegalArgumentException e){
-            manager.getTransaction().rollback();
-            e.printStackTrace();
-        }finally {
             manager.close();
-        }
-
-
 
     }
 }
