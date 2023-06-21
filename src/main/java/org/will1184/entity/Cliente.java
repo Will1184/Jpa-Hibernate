@@ -2,6 +2,8 @@ package org.will1184.entity;
 
 import jakarta.persistence.*;
 
+import java.time.LocalDateTime;
+
 @Entity
 @Table(name = "clientes")
 public class Cliente {
@@ -12,8 +14,20 @@ public class Cliente {
     private String apellido;
     @Column(name = "forma_pago")
     private String formaPago;
+//    @Column(name = "creado_en")
+//    private LocalDateTime creadoEn;
+//
+//    @Column(name = "editado_en")
+//    private LocalDateTime editadoEn;
 
+    @Embedded
+    private Auditoria auditoria= new Auditoria();
     public Cliente() {
+    }
+
+    public Cliente(String nombre, String apellido) {
+        this.nombre = nombre;
+        this.apellido = apellido;
     }
 
     public Cliente(Long id, String nombre, String apellido, String formaPago) {
@@ -22,6 +36,16 @@ public class Cliente {
         this.apellido = apellido;
         this.formaPago = formaPago;
     }
+/*    @PrePersist
+    public void prePersist(){
+        System.out.println("Inicializar algo justo antes del persist");
+        this.creadoEn = LocalDateTime.now();
+    }
+    @PreUpdate
+    public void preUpdate(){
+        System.out.println("Inicializar algo justo antes del persist");
+        this.editadoEn = LocalDateTime.now();
+    }*/
 
     public Long getId() {
         return id;
@@ -55,11 +79,14 @@ public class Cliente {
         this.formaPago = formaPago;
     }
 
+
     @Override
     public String toString() {
         return "id: " + id +
                 ", nombre: " + nombre+
                 ", apellido: " + apellido +
-                ", formaPago: " + formaPago ;
+                ", formaPago: " + formaPago +
+                ", creado en: "+auditoria.getCreadoEn()+
+                ", editado en: "+auditoria.getEditadoEn();
     }
 }
